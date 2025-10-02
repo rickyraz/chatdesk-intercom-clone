@@ -1,0 +1,1 @@
+//  # Agent schema (ORM / type definition)

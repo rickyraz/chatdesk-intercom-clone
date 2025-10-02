@@ -1,0 +1,1 @@
+// Kalau butuh REST/HTTP API (misal fetch history, mark read) → tetap rapi.

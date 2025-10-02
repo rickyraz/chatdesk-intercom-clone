@@ -1,0 +1,15 @@
+{
+    "name": "backend",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "bun run --watch ./src/main.ts",
+        "dev:hono": "bun run --watch ./src/modules/_trash/hono.ts",
+        "build": "bun build ./src/main.ts --outdir ./dist",
+        "start": "bun run ./dist/main.js"
+    },
+    "dependencies": {
+        "elysia": "^1.4.8",
+        "hono": "^4.9.9"
+    }
+}

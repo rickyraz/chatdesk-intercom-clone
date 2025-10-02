@@ -1,0 +1,1 @@
+“agent” = orang yang handle chat dari sisi kita (perusahaan / tim support).

@@ -1,0 +1,24 @@
+{
+  "name": "chatdesk-intercom-clone",
+  "module": "index.ts",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -k \"cd frontend && bun run dev\" \"cd backend && bun run dev\" \"cd backend && bun run dev:hono\"",
+    "build": "bun --filter '*' build",
+    "build:frontend": "bun --cwd frontend run build",
+    "build:backend": "bun --cwd backend run build"
+  },
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "frontend",
+    "backend"
+  ],
+  "dependencies": {
+    "effect": "^3.17.14"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "concurrently": "^9.2.1"
+  }
+}

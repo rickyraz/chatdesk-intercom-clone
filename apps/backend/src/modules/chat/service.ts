@@ -1,0 +1,1 @@
+// Sesuai prinsip clean architecture → logic reusable, gak nempel ke transport.
