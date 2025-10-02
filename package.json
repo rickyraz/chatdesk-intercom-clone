@@ -3,16 +3,17 @@
   "module": "index.ts",
   "private": true,
   "scripts": {
-    "dev": "concurrently -k \"cd frontend && bun run dev\" \"cd backend && bun run dev\" \"cd backend && bun run dev:hono\"",
+    "dev": "concurrently -k \"bun --filter backend dev\" \"bun --filter frontend dev\"",
+    "dev:backend": "bun --filter backend dev",
+    "dev:frontend": "bun --filter frontend dev",
     "build": "bun --filter '*' build",
     "build:frontend": "bun --cwd frontend run build",
     "build:backend": "bun --cwd backend run build"
   },
   "type": "module",
   "workspaces": [
-    "packages/*",
-    "frontend",
-    "backend"
+    "apps/*",
+    "packages/*"
   ],
   "dependencies": {
     "effect": "^3.17.14"

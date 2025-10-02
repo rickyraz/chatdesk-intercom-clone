@@ -1,29 +1,6 @@
 import { Elysia, } from 'elysia'
 import { Effect, Console } from "effect"
-// import { activeRooms, type WSMessage, type WSResponse } from './modules/_simple/subs'
-// import { WSMessage, WSResponse, activeRooms } from "@shared/types"
-export interface WSMessage {
-    type: 'join-room' | 'leave-room' | 'chat' | 'list-rooms' | 'ping'
-    roomId?: string
-    message?: string
-    timestamp?: number
-}
-
-export interface WSResponse {
-    type: 'connected' | 'joined' | 'left' | 'message' | 'room-list' | 'error' | 'pong'
-    userId?: string
-    roomId?: string
-    from?: string
-    message?: string
-    subscriptions?: string[]
-    rooms?: string[]
-    timestamp?: number
-    error?: string
-}
-
-export const activeRooms = new Set<string>()
-
-// ---
+import { type WSMessageClient, type WSMessageServer, activeRooms } from '@shared/types'
 
 const app = new Elysia({
     websocket: {
@@ -33,26 +10,7 @@ const app = new Elysia({
         },
     }
 })
-    .get('/', () => {
-        return {
-            hello: 'Elysia'
-        }
-    })
-    .state('version', 4)
-    .state('akuadalah', "ricky")
-    .decorate('getDate', () => Date.now())
-    .get('/user/:id', ({ params: { id }, store: { version, }, getDate }) => `${id} ${version} ${getDate()}`)
-    .get('/version', ({
-        getDate,
-        store: { version, akuadalah }
-    }) => `${version} ${akuadalah} ${getDate()}`)
-    .post('/form', ({ body }) => body)
-    .get('/ok', function* () {
-        yield 1
-        yield 2
-        const program = Console.log("Hello, World!")
-        Effect.runSync(program)
-    }).get('/effect-example', () => {
+    .get('/effect-example', () => {
         const program = Effect.gen(function* () {
             yield* Console.log("Processing request with Effect-ts")
             const currentTime = Date.now()
@@ -227,7 +185,7 @@ const app = new Elysia({
 
             console.log(`✅ Client connected: ${ws.id} (User: ${userId})`)
 
-            const response: WSResponse = {
+            const response: WSMessageServer = {
                 type: 'connected',
                 userId,
                 subscriptions,
@@ -239,7 +197,7 @@ const app = new Elysia({
 
         // message(ws, rawMessage) {
         //     try {
-        //         const msg = JSON.parse(rawMessage as string) as WSMessage
+        //         const msg = JSON.parse(rawMessage as string) as WSMessageClient
         //         const userId = ws.data.query.userId as string
 
         //         switch (msg.type) {
@@ -249,7 +207,7 @@ const app = new Elysia({
         //                         type: 'error',
         //                         error: 'roomId required',
         //                         timestamp: Date.now()
-        //                     } as WSResponse))
+        //                     } as WSMessageServer))
         //                     return
         //                 }
 
@@ -260,7 +218,7 @@ const app = new Elysia({
         //                 console.log(`User ${userId} joined room ${msg.roomId}`)
 
         //                 // Notify user
-        //                 const joinResponse: WSResponse = {
+        //                 const joinResponse: WSMessageServer = {
         //                     type: 'joined',
         //                     roomId: msg.roomId,
         //                     timestamp: Date.now()
@@ -274,7 +232,7 @@ const app = new Elysia({
         //                     roomId: msg.roomId,
         //                     message: `User ${userId} joined the room`,
         //                     timestamp: Date.now()
-        //                 } as WSResponse))
+        //                 } as WSMessageServer))
         //                 break
         //             }
 
@@ -284,7 +242,7 @@ const app = new Elysia({
         //                         type: 'error',
         //                         error: 'roomId required',
         //                         timestamp: Date.now()
-        //                     } as WSResponse))
+        //                     } as WSMessageServer))
         //                     return
         //                 }
 
@@ -294,7 +252,7 @@ const app = new Elysia({
         //                 console.log(`User ${userId} left room ${msg.roomId}`)
 
         //                 // Notify user
-        //                 const leaveResponse: WSResponse = {
+        //                 const leaveResponse: WSMessageServer = {
         //                     type: 'left',
         //                     roomId: msg.roomId,
         //                     timestamp: Date.now()
@@ -308,7 +266,7 @@ const app = new Elysia({
         //                     roomId: msg.roomId,
         //                     message: `User ${userId} left the room`,
         //                     timestamp: Date.now()
-        //                 } as WSResponse))
+        //                 } as WSMessageServer))
         //                 break
         //             }
 
@@ -318,7 +276,7 @@ const app = new Elysia({
         //                         type: 'error',
         //                         error: 'roomId and message required',
         //                         timestamp: Date.now()
-        //                     } as WSResponse))
+        //                     } as WSMessageServer))
         //                     return
         //                 }
 
@@ -328,12 +286,12 @@ const app = new Elysia({
         //                         type: 'error',
         //                         error: 'Not subscribed to this room',
         //                         timestamp: Date.now()
-        //                     } as WSResponse))
+        //                     } as WSMessageServer))
         //                     return
         //                 }
 
         //                 // Broadcast message to room
-        //                 const chatResponse: WSResponse = {
+        //                 const chatResponse: WSMessageServer = {
         //                     type: 'message',
         //                     from: userId,
         //                     roomId: msg.roomId,
@@ -348,7 +306,7 @@ const app = new Elysia({
         //             }
 
         //             case 'list-rooms': {
-        //                 const roomListResponse: WSResponse = {
+        //                 const roomListResponse: WSMessageServer = {
         //                     type: 'room-list',
         //                     rooms: Array.from(activeRooms),
         //                     timestamp: Date.now()
@@ -361,7 +319,7 @@ const app = new Elysia({
         //                 ws.send(JSON.stringify({
         //                     type: 'pong',
         //                     timestamp: Date.now()
-        //                 } as WSResponse))
+        //                 } as WSMessageServer))
         //                 break
         //             }
 
@@ -370,7 +328,7 @@ const app = new Elysia({
         //                     type: 'error',
         //                     error: 'Unknown message type',
         //                     timestamp: Date.now()
-        //                 } as WSResponse))
+        //                 } as WSMessageServer))
         //         }
         //     } catch (error) {
         //         console.error('Message parsing error:', error)
@@ -378,7 +336,7 @@ const app = new Elysia({
         //             type: 'error',
         //             error: 'Invalid message format',
         //             timestamp: Date.now()
-        //         } as WSResponse))
+        //         } as WSMessageServer))
         //     }
         // },
 
@@ -386,12 +344,12 @@ const app = new Elysia({
         message(ws, rawMessage) {
             try {
                 // Check apakah sudah object atau masih string
-                let msg: WSMessage
+                let msg: WSMessageClient
 
                 if (typeof rawMessage === 'string') {
                     msg = JSON.parse(rawMessage)
                 } else if (typeof rawMessage === 'object' && rawMessage !== null) {
-                    msg = rawMessage as WSMessage
+                    msg = rawMessage as WSMessageClient
                 } else {
                     throw new Error('Invalid message format')
                 }
@@ -405,7 +363,7 @@ const app = new Elysia({
                                 type: 'error',
                                 error: 'roomId required',
                                 timestamp: Date.now()
-                            } as WSResponse))
+                            } as WSMessageServer))
                             return
                         }
 
@@ -415,7 +373,7 @@ const app = new Elysia({
 
                         console.log(`User ${userId} joined room ${msg.roomId}`)
 
-                        const joinResponse: WSResponse = {
+                        const joinResponse: WSMessageServer = {
                             type: 'joined',
                             roomId: msg.roomId,
                             timestamp: Date.now()
@@ -428,7 +386,7 @@ const app = new Elysia({
                             roomId: msg.roomId,
                             message: `User ${userId} joined the room`,
                             timestamp: Date.now()
-                        } as WSResponse))
+                        } as WSMessageServer))
                         break
                     }
 
@@ -438,7 +396,7 @@ const app = new Elysia({
                                 type: 'error',
                                 error: 'roomId required',
                                 timestamp: Date.now()
-                            } as WSResponse))
+                            } as WSMessageServer))
                             return
                         }
 
@@ -447,7 +405,7 @@ const app = new Elysia({
 
                         console.log(`User ${userId} left room ${msg.roomId}`)
 
-                        const leaveResponse: WSResponse = {
+                        const leaveResponse: WSMessageServer = {
                             type: 'left',
                             roomId: msg.roomId,
                             timestamp: Date.now()
@@ -460,7 +418,7 @@ const app = new Elysia({
                             roomId: msg.roomId,
                             message: `User ${userId} left the room`,
                             timestamp: Date.now()
-                        } as WSResponse))
+                        } as WSMessageServer))
                         break
                     }
 
@@ -470,7 +428,7 @@ const app = new Elysia({
                                 type: 'error',
                                 error: 'roomId and message required',
                                 timestamp: Date.now()
-                            } as WSResponse))
+                            } as WSMessageServer))
                             return
                         }
 
@@ -479,11 +437,11 @@ const app = new Elysia({
                                 type: 'error',
                                 error: 'Not subscribed to this room',
                                 timestamp: Date.now()
-                            } as WSResponse))
+                            } as WSMessageServer))
                             return
                         }
 
-                        const chatResponse: WSResponse = {
+                        const chatResponse: WSMessageServer = {
                             type: 'message',
                             from: userId,
                             roomId: msg.roomId,
@@ -506,7 +464,7 @@ const app = new Elysia({
                     }
 
                     case 'list-rooms': {
-                        const roomListResponse: WSResponse = {
+                        const roomListResponse: WSMessageServer = {
                             type: 'room-list',
                             rooms: Array.from(activeRooms),
                             timestamp: Date.now()
@@ -519,7 +477,7 @@ const app = new Elysia({
                         ws.send(JSON.stringify({
                             type: 'pong',
                             timestamp: Date.now()
-                        } as WSResponse))
+                        } as WSMessageServer))
                         break
                     }
 
@@ -528,7 +486,7 @@ const app = new Elysia({
                             type: 'error',
                             error: 'Unknown message type',
                             timestamp: Date.now()
-                        } as WSResponse))
+                        } as WSMessageServer))
                 }
             } catch (error) {
                 console.error('Message parsing error:', error)
@@ -536,7 +494,7 @@ const app = new Elysia({
                     type: 'error',
                     error: 'Invalid message format',
                     timestamp: Date.now()
-                } as WSResponse))
+                } as WSMessageServer))
             }
         },
 
@@ -545,78 +503,6 @@ const app = new Elysia({
             console.log(`❌ Client disconnected: ${ws.id} (User: ${userId})`)
         }
     })
-    // .ws('/ws4', {
-    //     sendPings: true,
-    //     maxPayloadLength: 16 * 1024 * 1024,
-    //     idleTimeout: 10,
-
-    //     transform(context) {
-    //         console.log('🔄 TRANSFORM')
-    //     },
-
-    //     beforeHandle(context) {
-    //         console.log('🚀 BEFORE_HANDLE')
-    //         if (context.headers) {
-    //             console.log('Headers:', context.headers)
-    //         }
-    //     },
-
-    //     open(ws) {
-    //         console.log('✅ WEBSOCKET OPEN:', ws.id)
-
-    //         // Setup state - manual, prone to leaks
-    //         connections.set(ws.id, ws)
-    //         messageQueues.set(ws.id, [])
-    //         processingFlags.set(ws.id, false)
-
-    //         ws.send('Welcome to WebSocket server!')
-    //     },
-
-    //     message(ws, rawMessage) {
-    //         console.log('📨 MESSAGE from:', ws.id)
-
-    //         // Manual parsing
-    //         let processedMessage = rawMessage
-    //         if (typeof rawMessage === 'string') {
-    //             try {
-    //                 processedMessage = JSON.parse(rawMessage)
-    //             } catch (e) {
-    //                 processedMessage = rawMessage
-    //             }
-    //         }
-
-    //         // Add to queue - no backpressure
-    //         const queue = messageQueues.get(ws.id)
-    //         if (queue) {
-    //             // Race condition: bisa unlimited growth
-    //             if (queue.length >= 1000) {
-    //                 console.warn('Queue full, dropping message')
-    //                 return
-    //             }
-
-    //             queue.push(processedMessage)
-
-    //             // Race condition: multiple messages trigger this
-    //             if (!processingFlags.get(ws.id)) {
-    //                 processQueue(ws.id).catch(e => {
-    //                     console.error('Process error:', e)
-    //                     // Cleanup? Retry? Unclear
-    //                 })
-    //             }
-    //         }
-    //     },
-
-    //     close(ws) {
-    //         console.log('❌ WEBSOCKET CLOSE:', ws.id)
-
-    //         // Manual cleanup - kalau error di open, incomplete
-    //         connections.delete(ws.id)
-    //         messageQueues.delete(ws.id)
-    //         processingFlags.delete(ws.id)
-
-    //         // processQueue yang masih jalan? No cancellation
-    //     }
-    // })
     .listen(3000)
 
 console.log(`🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`)

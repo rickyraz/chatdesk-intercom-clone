@@ -1,28 +1,16 @@
-// src/components/WebSocketChat.tsx
 import { createSignal, onMount, onCleanup, For, Show } from 'solid-js'
+import type { WSMessageServer, WSMessageBase } from '@shared/types'
 
-interface Message {
-    from: string
-    message: string
-    timestamp: number
-    roomId?: string
+interface Message extends WSMessageBase {
+    from: string // generated jadi Typesnya di Message
+    message: string // Input User
+
 }
 
+// Room: state UI untuk tracking room mana yang user sudah join
 interface Room {
     id: string
     active: boolean
-}
-
-interface WSResponse {
-    type: string
-    userId?: string
-    roomId?: string
-    from?: string
-    message?: string
-    subscriptions?: string[]
-    rooms?: string[]
-    timestamp?: number
-    error?: string
 }
 
 export default function WebsocketSubsSimple() {
@@ -56,7 +44,7 @@ export default function WebsocketSubsSimple() {
 
         websocket.onmessage = (event) => {
             try {
-                const data: WSResponse = JSON.parse(event.data)
+                const data: WSMessageServer = JSON.parse(event.data)
 
                 switch (data.type) {
                     case 'connected':
@@ -223,8 +211,8 @@ export default function WebsocketSubsSimple() {
         setMessages(prev => [...prev, message])
     }
 
-    const formatTime = (timestamp: number) => {
-        return new Date(timestamp).toLocaleTimeString()
+    const formatTime = (timestamp?: number) => {
+        return new Date(timestamp || Date.now()).toLocaleTimeString()
     }
 
     onMount(() => {

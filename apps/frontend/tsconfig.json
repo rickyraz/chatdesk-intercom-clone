@@ -1,20 +1,37 @@
 {
+  // "compilerOptions": {
+  //   "lib": [
+  //     "ES2022",
+  //     "DOM",
+  //     "DOM.Iterable"
+  //   ],
+  //   "jsx": "preserve",
+  //   "jsxImportSource": "solid-js",
+  //   "noUnusedLocals": true,
+  //   "noUnusedParameters": true
+  // },
   "compilerOptions": {
     "lib": [
       "ES2022",
       "DOM",
       "DOM.Iterable"
     ],
+    "target": "ES2022", // ✅ TAMBAH INI
+    "module": "ESNext", // ✅ TAMBAH INI
+    "moduleResolution": "bundler", // ✅ TAMBAH INI
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
+    "strict": true, // ✅ TAMBAH INI
+    "skipLibCheck": true, // ✅ TAMBAH INI
     "noUnusedLocals": true,
-    "noUnusedParameters": true
-  },
-  "baseUrl": ".",
-  "paths": {
-    "@shared/*": [
-      "../packages/shared/*"
-    ]
+    "noUnusedParameters": true,
+    "composite": true, // ✅ TAMBAH INI
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": [
+        "../../packages/shared/src/*"
+      ]
+    }
   },
   "include": [
     "src/**/*"

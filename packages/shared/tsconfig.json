@@ -16,6 +16,10 @@
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
         "composite": true
+        // --- Required for project references
+        // Split your codebase into smaller projects that TypeScript compiles separately
+        // Declare dependencies between projects so TypeScript knows the build order
+        // Speed up builds through incremental compilation and caching
     },
     "include": [
         "src/**/*"

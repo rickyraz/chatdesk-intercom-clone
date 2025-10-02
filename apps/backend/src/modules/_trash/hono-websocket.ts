@@ -92,7 +92,7 @@ app.get('/ws', upgradeWebSocket((c) => {
     }
 }))
 
-console.log('🔥 Hono server starting on port 3001')
+// console.log('🔥 Hono server starting on port 3001')
 
 export default {
     port: 3001,

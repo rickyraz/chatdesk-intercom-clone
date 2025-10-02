@@ -1,1 +1,1 @@
-Setup kamu sudah benar. Backend bisa menggunakan dependencies yang ada di root node_modules, dan frontend punya node_modules sendiri karena Vite memerlukan beberapa dependencies khusus.
+# Chatdesk Demo And Learning

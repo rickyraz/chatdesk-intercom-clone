@@ -3,8 +3,10 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "bun run --watch ./src/main.ts",
-        "dev:hono": "bun run --watch ./src/modules/_trash/hono.ts",
+        "dev": "concurrently -n elysia,hono -c blue,magenta -k \"bun --watch src/main.ts ../../packages/shared/src\" \"bun --watch src/modules/_trash/hono.ts ../../packages/shared/src\"",
+        "dev:old": "concurrently -n elysia,hono -c blue,magenta -k \"bun --watch src/main.ts\" \"bun --watch src/modules/_trash/hono.ts\"",
+        "dev:elysia": "bun --watch ./src/main.ts",
+        "dev:hono": "bun --watch ./src/modules/_trash/hono.ts",
         "build": "bun build ./src/main.ts --outdir ./dist",
         "start": "bun run ./dist/main.js"
     },
